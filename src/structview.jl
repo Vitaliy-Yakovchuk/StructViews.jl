@@ -1,4 +1,4 @@
-struct StructView{T, N} <: AbstractArray{T, N}
+struct StructView{T, N} <: AbstractView{T, N}
     parent
     fields
 
@@ -6,8 +6,10 @@ struct StructView{T, N} <: AbstractArray{T, N}
 end
 
 function _getfields(parent::A) where {A<:AbstractArray}
-    fields = fieldnames(eltype(parent))
-    return fields
+    type = eltype(parent)
+    fields = fieldnames(type)
+    
+    return NamedTuple{fields}([FieldView{fieldtype(type, field), field, ndims(parent)}(parent) for field in fields])
 end
 
 function StructView(parent::A) where {A<:AbstractArray}
@@ -15,8 +17,18 @@ function StructView(parent::A) where {A<:AbstractArray}
     StructView{eltype(parent), ndims(parent)}(parent, fields)
 end
 
-Base.size(view::StructView) = size(view.parent)
+@inline Base.getindex(view::StructView, i...) = getindex(view.parent, i...)
 
-Base.getindex(view::StructView, i...) = getindex(view.parent, i...)
+@inline Base.parent(view::StructView) = view.parent
 
-Base.parent(view::StructView) = view.parent
+function Base.getproperty(view::StructView, field::Symbol)
+    fields = getfield(view, :fields)
+    if haskey(fields, field)
+        return fields[field]
+    end
+    return getfield(view, field)
+end
+
+function Base.propertynames(view::StructView)
+    return (fieldnames(StructView)..., keys(view.fields)...)
+end
