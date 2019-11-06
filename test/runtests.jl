@@ -31,15 +31,20 @@ function testarrayssame(a, b)
     @test length(a) == length(b)
 
     @test all(a .=== b)
+    @test all([a[i] === b[i] for i in 1:length(a)])
     @test all(all(a[i, :] .=== b[i, :]) for i in 1:20)
 end
 
 
 @testset "basic_wrapper" begin
     points, view = create_point_array_and_view()
-    
+    @test points[2, 2] === view[2, 2]
+
     testarrayssame(points, view)
     @test parent(view) === points
+    @test :x in propertynames(view)
+    @test :y in propertynames(view)
+    @test :parent in propertynames(view)
 end
 
 @testset "basic_field" begin
@@ -62,9 +67,10 @@ end
     X = (point->point.x).(points)
     Y = (point->point.y).(points)
     xview = FieldView{Int, :x}(points)
-    yview = FieldView{Int, :y}(points)
+    yview = FieldView{:y}(points)
     testarrayssame(X, xview)
     testarrayssame(Y, yview)
+    @test X[2, 2] === xview[2, 2]
     @test parent(xview) === points
     @test parent(yview) === points
 end
