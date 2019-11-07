@@ -5,11 +5,26 @@ struct StructView{T, N} <: AbstractView{T, N}
     StructView{T, N}(parent, fields) where {T, N} = new{T, N}(parent, fields)
 end
 
+function _createfieldview(parenttype, parent, field)
+    t = fieldtype(parenttype, field)
+    fieldview = FieldView{t, field, ndims(parent)}(parent)
+
+    if !(t isa DataType || t isa UnionAll) || t === Any
+        return fieldview
+    end
+    fields = fieldnames(t)
+    if isempty(fields) 
+        return fieldview
+    else
+        return StructView(fieldview)
+    end
+end
+
 function _getfields(parent::A) where {A<:AbstractArray}
     type = eltype(parent)
     fields = fieldnames(type)
     
-    return NamedTuple{fields}([FieldView{fieldtype(type, field), field, ndims(parent)}(parent) for field in fields])
+    return NamedTuple{fields}([_createfieldview(type, parent, field) for field in fields])
 end
 
 function StructView(parent::A) where {A<:AbstractArray}
