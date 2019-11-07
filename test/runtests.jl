@@ -29,10 +29,12 @@ function testarrayssame(a, b)
     @test a == b
     @test size(a) == size(b)
     @test length(a) == length(b)
+    @test eltype(a) === eltype(b)
 
     @test all(a .=== b)
     @test all([a[i] === b[i] for i in 1:length(a)])
     @test all(all(a[i, :] .=== b[i, :]) for i in 1:20)
+    @test all(all(eltype.(a[i, :]) .=== eltype.(b[i, :])) for i in 1:20)
 end
 
 
@@ -53,6 +55,8 @@ end
     X = (point->point.x).(points)
     Y = (point->point.y).(points)
 
+    # X may contain by Any type
+    X = convert(Array{Any}, X)
     
     testarrayssame(X, view.x)
     testarrayssame(Y, view.y)

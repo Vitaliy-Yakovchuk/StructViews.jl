@@ -4,7 +4,7 @@ struct FieldView{T, F, N} <: AbstractView{T, N}
     FieldView{T, F, N}(parent) where {T, F, N} = new{T, F, N}(parent)
 
     FieldView{T, F}(parent) where {T, F} = new{T, F, ndims(parent)}(parent)
-    FieldView{F}(parent) where {T, F} = new{eltype(parent), F, ndims(parent)}(parent)
+    FieldView{F}(parent) where {T, F} = new{fieldtype(eltype(parent), F), F, ndims(parent)}(parent)
 end
 
 @inline structfield(fieldview::FieldView{T, F, N}) where {T, F, N} = F

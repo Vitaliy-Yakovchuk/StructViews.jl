@@ -16,3 +16,4 @@ docs/site/
 Manifest.toml
 views.jl
 testanduploud.sh
+.vscode/
