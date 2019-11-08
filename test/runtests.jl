@@ -283,4 +283,7 @@ end
     view.x.im .-= 1
 
     @test point2 === points[2, 2]
+
+    view.x.im[2, 2] = 123
+    @test points[2, 2].x.im === 123
 end

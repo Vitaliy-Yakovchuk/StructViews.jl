@@ -89,9 +89,9 @@ julia> view.x
  5
  ```
 
- `StructView` lets you to update data in the parent array. If the data in the parent array is mutable the appropriate field will be updated. If the data type in the parant array is immutable the new objects with updated field will be set to the parent array.
-
  ## Example usage to update fields
+
+`StructView` lets you to update data in the parent array. If the data in the parent array is mutable the appropriate field will be updated. If the data type in the parant array is immutable the new objects with updated field will be set to the parent array.
  
  ```julia
 julia> points = [ComplexPoint(i+2im, i + 100im) for i in 1:5]
@@ -119,9 +119,10 @@ julia> points
  ComplexPoint(5 + 2im, 5 + 10100im)
 ```
 
+## Example usage to view field
+
 `FieldView` is a simple field viewer of the array of struct
 
-## Example usage to view field
 ```julia
 julia> struct Point
        x
@@ -145,8 +146,9 @@ julia> points = [Point(i, i + 100) for i in 1:5]
  5
 ```
 
-Update logic is the same (mutate mutable objects or create a copy with updated field in the parant array)
 ## Example usage to update field
+
+Update logic is the same (mutate mutable objects or create a copy with updated field in the parant array)
 
 ```julia
 julia> view[2] = 300
