@@ -1,8 +1,8 @@
-struct StructView{T, N} <: AbstractView{T, N}
+struct StructView{T, N, IT} <: AbstractView{T, N}
     parent
     fields
 
-    StructView{T, N}(parent, fields) where {T, N} = new{T, N}(parent, fields)
+    StructView{T, N}(parent, fields) where {T, N} = new{T, N, IndexStyle(parent)}(parent, fields)
 end
 
 function _createfieldview(parenttype, parent, field, typestack)
@@ -42,9 +42,9 @@ function StructView(parent::A) where {A<:AbstractArray}
 end
 
 
-@inline Base.getindex(view::StructView, i...) = getindex(view.parent, i...)
+Base.@propagate_inbounds Base.getindex(view::StructView, i...) = getindex(view.parent, i...)
 
-@inline Base.setindex!(view::StructView, v, i...) = setindex!(view.parent, v, i...)
+Base.@propagate_inbounds Base.setindex!(view::StructView, v, i...) = setindex!(view.parent, v, i...)
 
 @inline Base.parent(view::StructView) = view.parent
 
@@ -59,3 +59,5 @@ end
 function Base.propertynames(view::StructView)
     return (fieldnames(StructView)..., keys(view.fields)...)
 end
+
+index_type(::Type{StructView{T, N, IT}}) where {T, N, IT} = IT
