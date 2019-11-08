@@ -235,6 +235,9 @@ end
     view.y.im[11] = -10
 
     @test points[11].y.im === -10
+
+    view.y.im[2, 2] = -11
+    @test points[2, 2].y.im === -11
 end
 
 @testset "indexstyle" begin
@@ -244,4 +247,40 @@ end
     view = StructView(points)
     @test IndexStyle(points) === IndexStyle(view)
     @test IndexStyle(points) === IndexStyle(view.x)
+end
+
+@testset "update_immutable" begin
+    points = create_point1_array()
+    view = StructView(points)
+
+    Y = (point->point.y).(points)
+    
+    view.y .+= 1
+
+    Y .+= 1
+
+    testarrayssame(Y, view.y)
+
+    point = points[1]
+
+    view.y .+= 1
+
+    @test point !== points[1]
+    @test point != points[1]
+
+    view.y .-= 1
+
+    @test point === points[1]
+    @test point == points[1]
+
+    point2 = points[2, 2]
+
+    view.x.im .+= 1
+
+    @test point2 !== points[2, 2]
+    @test point2.x.im + 1 === points[2, 2].x.im
+
+    view.x.im .-= 1
+
+    @test point2 === points[2, 2]
 end
