@@ -236,3 +236,12 @@ end
 
     @test points[11].y.im === -10
 end
+
+@testset "indexstyle" begin
+    a = [1, 2, 3]
+    @test IndexStyle(a) === IndexStyle(StructView(a))
+    points = create_point_array()
+    view = StructView(points)
+    @test IndexStyle(points) === IndexStyle(view)
+    @test IndexStyle(points) === IndexStyle(view.x)
+end

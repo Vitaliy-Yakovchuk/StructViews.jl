@@ -22,6 +22,9 @@ end
 
 function _getfields(parent::A, typestack) where {A<:AbstractArray}
     parenttype = eltype(parent)
+    if !(parenttype isa DataType || parenttype isa UnionAll) || parenttype === Any
+        return parent
+    end
     fields = filter(collect(fieldnames(parenttype))) do field
         t = fieldtype(parenttype, field)
         return !(t in typestack)
