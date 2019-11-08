@@ -5,7 +5,7 @@ struct StructView{T, N} <: AbstractView{T, N}
     StructView{T, N}(parent, fields) where {T, N} = new{T, N}(parent, fields)
 end
 
-function _createfieldview(parenttype, parent, field)
+function _createfieldview(parenttype, parent, field, typestack)
     t = fieldtype(parenttype, field)
     fieldview = FieldView{t, field, ndims(parent)}(parent)
 
@@ -16,21 +16,31 @@ function _createfieldview(parenttype, parent, field)
     if isempty(fields) 
         return fieldview
     else
-        return StructView(fieldview)
+        return _newstructview(fieldview, typestack)
     end
 end
 
-function _getfields(parent::A) where {A<:AbstractArray}
-    type = eltype(parent)
-    fields = fieldnames(type)
-    
-    return NamedTuple{fields}([_createfieldview(type, parent, field) for field in fields])
+function _getfields(parent::A, typestack) where {A<:AbstractArray}
+    parenttype = eltype(parent)
+    fields = filter(collect(fieldnames(parenttype))) do field
+        t = fieldtype(parenttype, field)
+        return !(t in typestack)
+    end
+    return NamedTuple{(fields...,)}([_createfieldview(parenttype, parent, field, typestack) for field in fields])
+end
+
+function _newstructview(parent::A, typestack) where {A<:AbstractArray}
+    push!(typestack, eltype(parent))
+    fields = _getfields(parent, typestack)
+    delete!(typestack, eltype(parent))
+    StructView{eltype(parent), ndims(parent)}(parent, fields)
 end
 
 function StructView(parent::A) where {A<:AbstractArray}
-    fields = _getfields(parent)
-    StructView{eltype(parent), ndims(parent)}(parent, fields)
+    typestack = Set(Type[])
+    _newstructview(parent, typestack)
 end
+
 
 @inline Base.getindex(view::StructView, i...) = getindex(view.parent, i...)
 
