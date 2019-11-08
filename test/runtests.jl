@@ -189,3 +189,50 @@ end
     testarrayssame(Xim, ximview)
     testarrayssame(Xre, xreview)
 end
+
+mutable struct MitableComplex
+    im
+    re
+end
+
+mutable struct Point3
+    x
+    y::MitableComplex
+end
+
+function create_point3_array()
+    points = Array{Point3}(undef, 20, 30)
+
+    for i in 1:length(points)
+        points[i] = Point3(i, MitableComplex(i+1, i+100))
+    end
+
+    points
+end
+
+@testset "update_mutable" begin
+    points = create_point3_array()
+    view = StructView(points)
+    
+    X = convert(Array{Any}, (point->point.x).(points))
+    
+    testarrayssame(X, view.x)
+
+    view.x .+= 1
+    X .+= 1
+
+    testarrayssame(X, view.x)
+
+    view.x[1] = 123
+
+    @test points[1].x === 123
+
+    c = MitableComplex(1, 1)
+    view.y[10] = c
+
+    @test points[10].y === c
+
+    view.y.im[11] = -10
+
+    @test points[11].y.im === -10
+end

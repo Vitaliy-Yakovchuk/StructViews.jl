@@ -27,3 +27,15 @@ function Base.getindex(view::FieldView, I::Vararg{Union{Int, Colon}, N}) where {
     arr = parent(view)[I...]
     return FieldView{eltype(arr), structfield(view), ndims(arr)}(arr)
 end
+
+@inline function Base.setindex!(view::FieldView, v, i::Int) 
+    element = getindex(parent(view), i)
+    field = structfield(view)
+    Base.setfield!(element, field, v)
+end
+
+@inline function Base.setindex!(view::FieldView, v, I::Vararg{Int, N}) where {N}
+    element = getindex(parent(view), I...)
+    field = structfield(view)
+    Base.setfield!(element, field, v)
+end

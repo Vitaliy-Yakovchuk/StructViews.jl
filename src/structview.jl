@@ -44,6 +44,8 @@ end
 
 @inline Base.getindex(view::StructView, i...) = getindex(view.parent, i...)
 
+@inline Base.setindex!(view::StructView, v, i...) = setindex!(view.parent, v, i...)
+
 @inline Base.parent(view::StructView) = view.parent
 
 function Base.getproperty(view::StructView, field::Symbol)
