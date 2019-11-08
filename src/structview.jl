@@ -63,4 +63,16 @@ function Base.propertynames(view::StructView)
     return (fieldnames(StructView)..., keys(view.fields)...)
 end
 
+function Base.push!(view::StructView{T, 1, IT}, item) where {T, IT}
+    push!(parent(view), item)
+    return view
+end
+
+Base.pop!(view::StructView{T, 1, IT}) where {T, IT} = pop!(parent(view))
+
+function Base.append!(view::StructView{T, 1, IT}, iter) where {T, IT} 
+    append!(parent(view), iter)
+    return view
+end
+
 index_type(::Type{StructView{T, N, IT}}) where {T, N, IT} = IT

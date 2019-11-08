@@ -6,7 +6,7 @@
 [![codecov](https://codecov.io/gh/Vitaliy-Yakovchuk/StructViews.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/Vitaliy-Yakovchuk/StructViews.jl)
 
 
-This package introduces the types `StructView` and `FieldView` which are `AbstractArray`. `StructView` lets to view fields of the struct in the array as the array of fields.
+This package introduces the types `StructView` and `FieldView` which are `AbstractArray`. `StructView` lets to view array of structs as struct of field arrays. All data are stored in the provided parent array. Parent array may be updated transparently via `StructView`
 
 ## Example usage to view point coordinates
 
@@ -26,27 +26,45 @@ julia> points = [Point(i, i + 100) for i in 1:5]
  Point(4, 104)
  Point(5, 105)
 
- julia> view = StructView(points)
+julia> view = StructView(points)
 5-element StructView{Point,1,IndexLinear()}:
  Point(1, 101)
  Point(2, 102)
  Point(3, 103)
  Point(4, 104)
  Point(5, 105)
- julia> view.x
-5-element FieldView{Any,:x,1,IndexLinear(),false}:
+julia> view.x
+5-element FieldView{Any,:x,1,IndexLinear(),:immutable}:
  1
  2
  3
  4
  5
- julia> view.y
-5-element FieldView{Any,:y,1,IndexLinear(),false}:
+julia> view.y
+5-element FieldView{Any,:y,1,IndexLinear(),:immutable}:
  101
  102
  103
  104
  105
+julia> push!(view, Point(-1, -1))
+6-element StructView{Point,1,IndexLinear()}:
+ Point(1, 101)
+ Point(2, 102)
+ Point(3, 103)
+ Point(4, 104)
+ Point(5, 105)
+ Point(-1, -1)
+julia> points
+6-element Array{Point,1}:
+ Point(1, 101)
+ Point(2, 102)
+ Point(3, 103)
+ Point(4, 104)
+ Point(5, 105)
+ Point(-1, -1)
+julia> pop!(view)
+Point(-1, -1)
  ```
 ## Example usage to view point coordinates, where coordinates are complex numbers
 
@@ -56,7 +74,7 @@ julia> struct ComplexPoint
        y::Complex{Int}
 end
 
-julia> points = [ComplexPoint(i+2im, i + 100im) for i in 1:5]
+julia> points = [ComplexPoint(i + 2im, i + 100im) for i in 1:5]
 5-element Array{ComplexPoint,1}:
  ComplexPoint(1 + 2im, 1 + 100im)
  ComplexPoint(2 + 2im, 2 + 100im)
@@ -80,8 +98,8 @@ julia> view.x
  4 + 2im
  5 + 2im
 
- julia> view.y.re
-5-element FieldView{Int64,:re,1,IndexLinear(),false}:
+julia> view.y.re
+5-element FieldView{Int64,:re,1,IndexLinear(),:immutable}:
  1
  2
  3
@@ -94,7 +112,7 @@ julia> view.x
 `StructView` lets you to update data in the parent array. If the data in the parent array is mutable the appropriate field will be updated. If the data type in the parant array is immutable the new objects with updated field will be set to the parent array.
  
  ```julia
-julia> points = [ComplexPoint(i+2im, i + 100im) for i in 1:5]
+julia> points = [ComplexPoint(i + 2im, i + 100im) for i in 1:5]
 5-element Array{ComplexPoint,1}:
  ComplexPoint(1 + 2im, 1 + 100im)
  ComplexPoint(2 + 2im, 2 + 100im)
@@ -103,7 +121,7 @@ julia> points = [ComplexPoint(i+2im, i + 100im) for i in 1:5]
  ComplexPoint(5 + 2im, 5 + 100im)
 
 julia> view.y.im .+= 10000
-5-element FieldView{Int64,:im,1,IndexLinear(),false}:
+5-element FieldView{Int64,:im,1,IndexLinear(),:immutable}:
  10100
  10100
  10100
@@ -137,8 +155,8 @@ julia> points = [Point(i, i + 100) for i in 1:5]
  Point(4, 104)
  Point(5, 105)
 
- julia> view = FieldView{:x}(points)
-5-element FieldView{Any,:x,1,IndexLinear(),false}:
+julia> view = FieldView{:x}(points)
+5-element FieldView{Any,:x,1,IndexLinear(),:immutable}:
  1
  2
  3

@@ -30,6 +30,7 @@ function testarrayssame(a, b)
     @test size(a) == size(b)
     @test length(a) == length(b)
     @test eltype(a) === eltype(b)
+    @test axes(a) === axes(b)
 
     if(isempty(a))
         return
@@ -286,4 +287,21 @@ end
 
     view.x.im[2, 2] = 123
     @test points[2, 2].x.im === 123
+end
+
+@testset "view_updated" begin
+    a = [1, 2, 3]
+    s = StructView(a)
+
+    push!(s, 4)
+
+    @test a == [1, 2, 3, 4]
+
+    @test pop!(s) === 4
+    
+    @test a == [1, 2, 3]
+
+    append!(s, [1, 2, 3])
+
+    @test a == [1, 2, 3, 1, 2, 3]
 end

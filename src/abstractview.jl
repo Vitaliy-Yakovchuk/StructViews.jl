@@ -9,3 +9,5 @@ abstract type AbstractView{T, N} <: AbstractArray{T, N} end
 function Base.IndexStyle(type::Type{S}) where {S <: AbstractView}
     index_type(S)
 end
+
+@inline Base.axes(view::AbstractView{T, N}) where {T, N} = axes(parent(view))
