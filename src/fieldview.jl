@@ -1,11 +1,18 @@
+"""
+    FieldView{T, F, N, IT, M} <: AbstractView{T, N}
+
+A type-view to array of structures as a given structure field as the field array.
+"""
 struct FieldView{T, F, N, IT, M} <: AbstractView{T, N}
     parent
     
-    FieldView{T, F, N}(parent) where {T, F, N} = new{T, F, N, IndexStyle(parent), eltype(parent).mutable ? (:mutable) : (:immutable)}(parent)
+    FieldView{T, F, N}(parent) where {T, F, N} = new{T, F, N, IndexStyle(parent), ismutabletype(eltype(parent))}(parent)
 
-    FieldView{T, F}(parent) where {T, F} = new{T, F, ndims(parent), IndexStyle(parent), eltype(parent).mutable ? (:mutable) : (:immutable)}(parent)
-    FieldView{F}(parent) where {T, F} = new{fieldtype(eltype(parent), F), F, ndims(parent), IndexStyle(parent), eltype(parent).mutable ? (:mutable) : (:immutable)}(parent)
+    FieldView{T, F}(parent) where {T, F} = new{T, F, ndims(parent), IndexStyle(parent), ismutabletype(eltype(parent))}(parent)
+    FieldView{F}(parent) where {T, F} = new{fieldtype(eltype(parent), F), F, ndims(parent), IndexStyle(parent), ismutabletype(eltype(parent))}(parent)
 end
+
+ismutabletype(type) = :mutable in propertynames(type) ? (type.mutable ? :mutable : :immutable) : :immutable
 
 @inline structfield(fieldview::FieldView{T, F, N, IT, M}) where {T, F, N, IT, M} = F
 

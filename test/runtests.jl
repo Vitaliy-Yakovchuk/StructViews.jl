@@ -143,7 +143,7 @@ struct H{T}
 end
 
 struct Point2
-    x::Complex{Int}
+    x::Complex
     y::Int
     p::Point2
     h::H{Point2}

@@ -33,6 +33,7 @@ julia> view = StructView(points)
  Point(3, 103)
  Point(4, 104)
  Point(5, 105)
+
 julia> view.x
 5-element FieldView{Any,:x,1,IndexLinear(),:immutable}:
  1
@@ -40,6 +41,7 @@ julia> view.x
  3
  4
  5
+
 julia> view.y
 5-element FieldView{Any,:y,1,IndexLinear(),:immutable}:
  101
@@ -47,6 +49,7 @@ julia> view.y
  103
  104
  105
+
 julia> push!(view, Point(-1, -1))
 6-element StructView{Point,1,IndexLinear()}:
  Point(1, 101)
@@ -55,6 +58,7 @@ julia> push!(view, Point(-1, -1))
  Point(4, 104)
  Point(5, 105)
  Point(-1, -1)
+
 julia> points
 6-element Array{Point,1}:
  Point(1, 101)
@@ -63,6 +67,7 @@ julia> points
  Point(4, 104)
  Point(5, 105)
  Point(-1, -1)
+ 
 julia> pop!(view)
 Point(-1, -1)
  ```

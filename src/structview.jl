@@ -1,3 +1,7 @@
+"""
+    StructView{T, N, IT} <: AbstractView{T, N}
+A type-view to array of structures as a structure of field arrays.
+"""
 struct StructView{T, N, IT} <: AbstractView{T, N}
     parent
     fields
@@ -5,11 +9,15 @@ struct StructView{T, N, IT} <: AbstractView{T, N}
     StructView{T, N}(parent, fields) where {T, N} = new{T, N, IndexStyle(parent)}(parent, fields)
 end
 
+function _hasnofields(t)
+    !(t isa DataType || t isa UnionAll) || t === Any || (:abstract in propertynames(t) && t.abstract)
+end
+
 function _createfieldview(parenttype, parent, field, typestack)
     t = fieldtype(parenttype, field)
     fieldview = FieldView{t, field, ndims(parent)}(parent)
 
-    if !(t isa DataType || t isa UnionAll) || t === Any
+    if _hasnofields(t)
         return fieldview
     end
     fields = fieldnames(t)
@@ -22,7 +30,7 @@ end
 
 function _getfields(parent::A, typestack) where {A<:AbstractArray}
     parenttype = eltype(parent)
-    if !(parenttype isa DataType || parenttype isa UnionAll) || parenttype === Any
+    if _hasnofields(parenttype)
         return parent
     end
     fields = filter(collect(fieldnames(parenttype))) do field
@@ -39,6 +47,10 @@ function _newstructview(parent::A, typestack) where {A<:AbstractArray}
     StructView{eltype(parent), ndims(parent)}(parent, fields)
 end
 
+"""
+    StructView(parent::AbstractArray)
+Create a new StructView, a view to array of structures as a structure of field arrays.
+"""
 function StructView(parent::A) where {A<:AbstractArray}
     typestack = Set(Type[])
     _newstructview(parent, typestack)
