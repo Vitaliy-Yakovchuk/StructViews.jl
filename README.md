@@ -8,6 +8,12 @@
 
 This package introduces the types `StructView` and `FieldView` which are `AbstractArray`. `StructView` lets to view array of structs as struct of field arrays. All data are stored in the provided parent array. Parent array may be updated transparently via `StructView`
 
+## Installation 
+
+```julia
+using Pkg; Pkg.add("StructViews")
+```
+
 ## Example usage to view point coordinates
 
 ```julia
