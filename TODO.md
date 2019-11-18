@@ -7,4 +7,3 @@
 - [x] Recursive check of structure (e.g. view.a.b...)
 - [x] Support of updating of the mutable structures
 - [x] Updating of the immutable structures (with cloning of the original structures)
-- [ ] Document source code
