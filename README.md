@@ -5,10 +5,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/Vitaliy-Yakovchuk/StructViews.jl/badge.svg?branch=master)](https://coveralls.io/github/Vitaliy-Yakovchuk/StructViews.jl?branch=master)
 [![codecov](https://codecov.io/gh/Vitaliy-Yakovchuk/StructViews.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/Vitaliy-Yakovchuk/StructViews.jl)
 
-
 This package introduces the types `StructView` and `FieldView` which are `AbstractArray`. `StructView` lets to view array of structs as struct of field arrays. All data are stored in the provided parent array. Parent array may be updated transparently via `StructView`
 
-## Installation 
+## Installation
 
 ```julia
 using Pkg; Pkg.add("StructViews")
@@ -73,10 +72,11 @@ julia> points
  Point(4, 104)
  Point(5, 105)
  Point(-1, -1)
- 
+
 julia> pop!(view)
 Point(-1, -1)
  ```
+
 ## Example usage to view point coordinates, where coordinates are complex numbers
 
 ```julia
@@ -118,11 +118,11 @@ julia> view.y.re
  5
  ```
 
- ## Example usage to update fields
+## Example usage to update fields
 
 `StructView` lets you to update data in the parent array. If the data in the parent array is mutable the appropriate field will be updated. If the data type in the parant array is immutable the new objects with updated field will be set to the parent array.
- 
- ```julia
+
+```julia
 julia> points = [ComplexPoint(i + 2im, i + 100im) for i in 1:5]
 5-element Array{ComplexPoint,1}:
  ComplexPoint(1 + 2im, 1 + 100im)
