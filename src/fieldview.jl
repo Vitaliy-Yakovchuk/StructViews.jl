@@ -9,7 +9,7 @@ struct FieldView{T,F,N,IT,M} <: AbstractView{T,N}
     FieldView{T,F,N}(parent) where {T,F,N} = new{T,F,N,IndexStyle(parent),ismutabletype(eltype(parent))}(parent)
 
     FieldView{T,F}(parent) where {T,F} = new{T,F,ndims(parent),IndexStyle(parent),ismutabletype(eltype(parent))}(parent)
-    FieldView{F}(parent) where {T,F} = new{fieldtype(eltype(parent), F),F,ndims(parent),IndexStyle(parent),ismutabletype(eltype(parent))}(parent)
+    FieldView{F}(parent) where {F} = new{fieldtype(eltype(parent), F),F,ndims(parent),IndexStyle(parent),ismutabletype(eltype(parent))}(parent)
 end
 
 ismutabletype(type) = :mutable in propertynames(type) ? (type.mutable ? :mutable : :immutable) : :immutable
