@@ -11,7 +11,7 @@ function create_point_array()
     points = Array{Point}(undef, 20, 30)
 
     for i in 1:length(points)
-        points[i] = Point(i, i+100)
+        points[i] = Point(i, i + 100)
     end
 
     points
@@ -32,7 +32,7 @@ function testarrayssame(a, b)
     @test eltype(a) === eltype(b)
     @test axes(a) === axes(b)
 
-    if(isempty(a))
+    if (isempty(a))
         return
     end
 
@@ -75,7 +75,7 @@ end
 
     X = (point->point.x).(points)
     Y = (point->point.y).(points)
-    xview = FieldView{Int, :x}(points)
+    xview = FieldView{Int,:x}(points)
     yview = FieldView{:y}(points)
     testarrayssame(X, xview)
     testarrayssame(Y, yview)
@@ -93,7 +93,7 @@ function create_point1_array()
     points = Array{Point1}(undef, 20, 30)
 
     for i in 1:length(points)
-        points[i] = Point1(i+2im, i+100)
+        points[i] = Point1(i + 2im, i + 100)
     end
 
     points
@@ -205,7 +205,7 @@ function create_point3_array()
     points = Array{Point3}(undef, 20, 30)
 
     for i in 1:length(points)
-        points[i] = Point3(i, MitableComplex(i+1, i+100))
+        points[i] = Point3(i, MitableComplex(i + 1, i + 100))
     end
 
     points

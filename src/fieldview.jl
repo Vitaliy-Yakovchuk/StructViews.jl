@@ -3,18 +3,18 @@
 
 A type-view to array of structures as a given structure field as the field array.
 """
-struct FieldView{T, F, N, IT, M} <: AbstractView{T, N}
+struct FieldView{T,F,N,IT,M} <: AbstractView{T,N}
     parent
     
-    FieldView{T, F, N}(parent) where {T, F, N} = new{T, F, N, IndexStyle(parent), ismutabletype(eltype(parent))}(parent)
+    FieldView{T,F,N}(parent) where {T,F,N} = new{T,F,N,IndexStyle(parent),ismutabletype(eltype(parent))}(parent)
 
-    FieldView{T, F}(parent) where {T, F} = new{T, F, ndims(parent), IndexStyle(parent), ismutabletype(eltype(parent))}(parent)
-    FieldView{F}(parent) where {T, F} = new{fieldtype(eltype(parent), F), F, ndims(parent), IndexStyle(parent), ismutabletype(eltype(parent))}(parent)
+    FieldView{T,F}(parent) where {T,F} = new{T,F,ndims(parent),IndexStyle(parent),ismutabletype(eltype(parent))}(parent)
+    FieldView{F}(parent) where {T,F} = new{fieldtype(eltype(parent), F),F,ndims(parent),IndexStyle(parent),ismutabletype(eltype(parent))}(parent)
 end
 
 ismutabletype(type) = :mutable in propertynames(type) ? (type.mutable ? :mutable : :immutable) : :immutable
 
-@inline structfield(fieldview::FieldView{T, F, N, IT, M}) where {T, F, N, IT, M} = F
+@inline structfield(fieldview::FieldView{T,F,N,IT,M}) where {T,F,N,IT,M} = F
 
 @inline Base.parent(view::FieldView) = view.parent
 
@@ -24,24 +24,24 @@ ismutabletype(type) = :mutable in propertynames(type) ? (type.mutable ? :mutable
     return Base.getfield(element, field)
 end
 
-@inline function Base.getindex(view::FieldView, I::Vararg{Int, N}) where {N}
+@inline function Base.getindex(view::FieldView, I::Vararg{Int,N}) where {N}
     element = getindex(parent(view), I...)
     field = structfield(view)
     return Base.getfield(element, field)
 end
 
-Base.@propagate_inbounds function Base.getindex(view::FieldView, I::Vararg{Union{Int, Colon}, N}) where {N}
+Base.@propagate_inbounds function Base.getindex(view::FieldView, I::Vararg{Union{Int,Colon},N}) where {N}
     arr = parent(view)[I...]
-    return FieldView{eltype(arr), structfield(view), ndims(arr)}(arr)
+    return FieldView{eltype(arr),structfield(view),ndims(arr)}(arr)
 end
 
-Base.@propagate_inbounds function Base.setindex!(view::FieldView{T, F, N, IT, :mutable}, v, i::Int) where {T, F, N, IT}
+Base.@propagate_inbounds function Base.setindex!(view::FieldView{T,F,N,IT,:mutable}, v, i::Int) where {T,F,N,IT}
     element = getindex(parent(view), i)
     field = structfield(view)
     Base.setfield!(element, field, v)
 end
 
-Base.@propagate_inbounds function Base.setindex!(view::FieldView{T, F, N, IT, :mutable}, v, I::Vararg{Int, X}) where {T, F, N, IT, X}
+Base.@propagate_inbounds function Base.setindex!(view::FieldView{T,F,N,IT,:mutable}, v, I::Vararg{Int,X}) where {T,F,N,IT,X}
     element = getindex(parent(view), I...)
     field = structfield(view)
     Base.setfield!(element, field, v)
@@ -61,14 +61,14 @@ function updateimmutable(view, element, v)
     return type(params...)
 end
 
-Base.@propagate_inbounds function Base.setindex!(view::FieldView{T, F, N, IT, :immutable}, v, i::Int) where {T, F, N, IT}
+Base.@propagate_inbounds function Base.setindex!(view::FieldView{T,F,N,IT,:immutable}, v, i::Int) where {T,F,N,IT}
     element = getindex(parent(view), i)
     setindex!(parent(view), updateimmutable(view, element, v), i)
 end
 
-Base.@propagate_inbounds function Base.setindex!(view::FieldView{T, F, N, IT, :immutable}, v, I::Vararg{Int, X}) where {T, F, N, IT, X}
+Base.@propagate_inbounds function Base.setindex!(view::FieldView{T,F,N,IT,:immutable}, v, I::Vararg{Int,X}) where {T,F,N,IT,X}
     element = getindex(parent(view), I...)
     setindex!(parent(view), updateimmutable(view, element, v), I...)
 end
 
-index_type(::Type{FieldView{T, F, N, IT, M}}) where {T, F, N, IT, M} = IT
+index_type(::Type{FieldView{T,F,N,IT,M}}) where {T,F,N,IT,M} = IT
